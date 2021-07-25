@@ -1,7 +1,11 @@
-const express = require("express")
+const express = require("express");
 
-const app = express()
-const port = 3000
+const app = express();
+const port = 3000;
+
+//parse JSON using express
+app.use(express.json());
+app.use(express.urlencoded( {extended: false} ));
 
 let movies = [
     {
@@ -15,7 +19,36 @@ let movies = [
         title: 'how to train your dragon',
         director: 'Chris Sanders',
         release_year: '2010'
-    },
+    }
 ];
 
 //get the movie list in the form of JSON
+app.get('/movie' , (req,res) => {
+    res.json(movies)
+})
+
+//add a movie to the list
+app.post('/movie', (req,res) => {
+    const movie = req.body
+
+    console.log(movie)
+    movies.push(movie)
+    res.send("Movie is added to the list");
+})
+
+//search for a movie from the database
+app.get('/movie/:id', (req,res) => {
+    const id = req.params.id
+    
+    for(let movie of movies){
+        if(movie.id === id){
+            res.json(movie)
+            return
+        }
+    }
+
+    res.status(404).send("Movie not found")
+})
+
+//set the server to listen at port
+app.listen(port, () => console.log(`Server listening at port ${port}`))
